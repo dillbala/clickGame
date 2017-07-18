@@ -70,40 +70,22 @@ var imageSet = [
   }
 ];
 
-var timerCount = function(){
-  clearInterval(intravel);
-function c(){
-  var n=10;
-    var c=10;
-  document.getElementById('timer').innerHTML = c;
-  setInterval(function(){
-    c--;
-    if(c>=0){
-      document.getElementById('timer').innerHTML = c;
-    }
-        if(c===0){
-            window.location.href = "http://www.google.com";
-        }
-  },1000);
-}
-
-// Start
-c();
-
-// Loop
-var intravel = setInterval(function(){
-  c();
-},10000);
-}
 var chooser = function(v){
    return [Math.floor(Math.random()*v), Math.floor(Math.random()*v)];
 }
-
 function genSquere(v,k){ 
     //timer Count
-    document.getElementById('timer').innerHTML = '';
-    timerCount();
-    //timer Count
+    function tick() {
+       var remaining = (count - (now() - initTick)) / 1000;  
+       remaining = remaining >= 0 ? remaining : window.location.href = "http://www.google.com";
+       var secs = remaining.toFixed(2);
+       timerElement.innerHTML = secs + " secs";
+       if (remaining) setTimeout(tick, delay);
+    }
+    initTick = now();
+    setTimeout(tick, delay);
+     //timer Count
+
     //Game Squere Creator
       var e = document.querySelector('.game-board');
       var coordinates = chooser(v);
@@ -130,6 +112,7 @@ for(i=0; i<v; i++){
   //Game Squere Creator
   }
   }
+
 // Get the modal
 function next(){
     url = "http://google.com";
@@ -146,6 +129,7 @@ function next(){
       genSquere(set--,++k);
     }
     if(level === 16){
+      document.getElementById('level').innerHTML = '';
       document.querySelector('.game-board').innerHTML = "You Did It...!";
       window.location.href = url;
     }
@@ -153,7 +137,6 @@ function next(){
 
 function popup(){
   document.getElementById('myModal').style.display = "block";
-  document.getElementById('timer').innerHTML = '';
 }
 </script>
 <style>
@@ -312,6 +295,17 @@ body{
     document.getElementById('myModal').style.display = "none";
     genSquere(set--,++k);
   }
-</script>
+  //timer
+  function now() {
+    return window.performance ? window.performance.now() : Date.now();
+  }
+    
+    var count = 10000;
+    var delay = 20; //20 ms. This will be only indicative. There's no guarantee the browswer will call the function after exactly this time
+    
+    var initTick = 0;
+    var timerElement = document.getElementById("timer");
+  //timer
+ </script>
 </body>
 </html>
