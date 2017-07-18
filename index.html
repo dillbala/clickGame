@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>click game</title>
+<!-- <script src="clickGame.js"></script> -->
+<script type="text/javascript">
+var k=0;
+var set=2;
+var level = 1;
+var imageSet = [
+  {
+    normal: "http://avatarbox.net/avatars/img33/mighty_mouse_cartoon_avatar_picture_63839.gif",
+    diff: "http://www.millionglitters.com/avatar/cartoons/SpongeBob-Yikes.gif"
+  },
+  {
+    normal:"http://www.millionglitters.com/avatar/cartoons/SpongeBob-Yikes.gif",
+    diff:"http://avatarbox.net/avatars/img33/mighty_mouse_cartoon_avatar_picture_63839.gif"
+  },
+  {
+    normal: "http://avatarbox.net/avatars/img33/mighty_mouse_cartoon_avatar_picture_63839.gif",
+    diff: "http://www.millionglitters.com/avatar/cartoons/SpongeBob-Yikes.gif"
+  },
+  {
+    normal:"http://www.millionglitters.com/avatar/cartoons/SpongeBob-Yikes.gif",
+    diff:"http://avatarbox.net/avatars/img33/mighty_mouse_cartoon_avatar_picture_63839.gif"
+  },
+  {
+    normal: "http://avatarbox.net/avatars/img33/mighty_mouse_cartoon_avatar_picture_63839.gif",
+    diff: "http://www.millionglitters.com/avatar/cartoons/SpongeBob-Yikes.gif"
+  },
+  {
+    normal:"http://www.millionglitters.com/avatar/cartoons/SpongeBob-Yikes.gif",
+    diff:"http://avatarbox.net/avatars/img33/mighty_mouse_cartoon_avatar_picture_63839.gif"
+  },
+  {
+    normal: "http://avatarbox.net/avatars/img33/mighty_mouse_cartoon_avatar_picture_63839.gif",
+    diff: "http://www.millionglitters.com/avatar/cartoons/SpongeBob-Yikes.gif"
+  },
+  {
+    normal:"http://www.millionglitters.com/avatar/cartoons/SpongeBob-Yikes.gif",
+    diff:"http://avatarbox.net/avatars/img33/mighty_mouse_cartoon_avatar_picture_63839.gif"
+  },
+  {
+    normal: "http://avatarbox.net/avatars/img33/mighty_mouse_cartoon_avatar_picture_63839.gif",
+    diff: "http://www.millionglitters.com/avatar/cartoons/SpongeBob-Yikes.gif"
+  },
+  {
+    normal:"http://www.millionglitters.com/avatar/cartoons/SpongeBob-Yikes.gif",
+    diff:"http://avatarbox.net/avatars/img33/mighty_mouse_cartoon_avatar_picture_63839.gif"
+  },
+  {
+    normal: "http://avatarbox.net/avatars/img33/mighty_mouse_cartoon_avatar_picture_63839.gif",
+    diff: "http://www.millionglitters.com/avatar/cartoons/SpongeBob-Yikes.gif"
+  },
+  {
+    normal:"http://www.millionglitters.com/avatar/cartoons/SpongeBob-Yikes.gif",
+    diff:"http://avatarbox.net/avatars/img33/mighty_mouse_cartoon_avatar_picture_63839.gif"
+  },
+  {
+    normal: "http://avatarbox.net/avatars/img33/mighty_mouse_cartoon_avatar_picture_63839.gif",
+    diff: "http://www.millionglitters.com/avatar/cartoons/SpongeBob-Yikes.gif"
+  },
+  {
+    normal:"http://www.millionglitters.com/avatar/cartoons/SpongeBob-Yikes.gif",
+    diff:"http://avatarbox.net/avatars/img33/mighty_mouse_cartoon_avatar_picture_63839.gif"
+  },
+  {
+    normal: "http://avatarbox.net/avatars/img33/mighty_mouse_cartoon_avatar_picture_63839.gif",
+    diff: "http://www.millionglitters.com/avatar/cartoons/SpongeBob-Yikes.gif"
+  }
+];
+
+var timerCount = function(){
+function c(){
+  var n=10;
+    var c=10;
+  document.getElementById('timer').innerHTML = c;
+  setInterval(function(){
+    c--;
+    if(c>=0){
+      document.getElementById('timer').innerHTML = c;
+    }
+        if(c===0){
+            window.location.href = "http://www.google.com";
+        }
+  },1000);
+}
+
+// Start
+c();
+
+// Loop
+setInterval(function(){
+  c();
+},10000);
+}
+var chooser = function(v){
+   return [Math.floor(Math.random()*v), Math.floor(Math.random()*v)];
+}
+
+function genSquere(v,k){ 
+    //timer Count
+    timerCount();
+    //timer Count
+    //Game Squere Creator
+      var e = document.querySelector('.game-board');
+      var coordinates = chooser(v);
+      document.getElementById('level').innerHTML = level+'/15';
+for(i=0; i<v; i++){
+  var row = document.createElement("div");
+    row.className = "row";
+    for(var x = 0; x < v; x++){ 
+            var cell = document.createElement("div"); 
+                cell.className = "square"; 
+                cell.setAttribute('data-index', x+1);
+            row.appendChild(cell); 
+            var image = document.createElement("img");
+                image.className="img-responsive";
+                if(i === coordinates[0] && x === coordinates[1]) {
+                    image.src=imageSet[k].diff;
+                    image.setAttribute("onClick","next()");
+                } else {
+                    image.src=imageSet[k].normal; 
+                }
+            cell.appendChild(image);
+        } 
+  e.appendChild(row);
+  //Game Squere Creator
+  }
+  }
+
+function next(){
+    level++;
+    document.querySelector('.game-board').innerHTML = "";
+    set++;
+    if(level%3 === 0){genSquere(set,++k);}else{genSquere(set--,++k);}
+ }
+
+    
+</script>
+<style>
+#level{
+  margin: 20px;
+}
+body{
+  width: 100%;
+}
+.container{
+  width: 300px;
+  margin: 20px auto;
+}
+.game-board{
+  position: relative;
+  display:flex;
+  width:300px;
+  height:400px;
+  flex-direction:column;
+  flex-wrap:wrap;
+  justify-content:flex-start;
+}
+.row{
+  width:100%;
+  display: flex;
+}
+.square{
+  width:100%;
+  box-sizing:border-box;
+  border:1px solid #000;
+  display:flex;
+}
+.square img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.startGame img{
+  width: 250px;
+  height:250px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div id="level"></div></br>
+  <div id="timer"></div>
+  <div class="startGame">
+    <img src="file:///C:/Users/thoughtminerz/Downloads/child-1837375_1280.png"/></br>
+  </div>
+  <div class="game-board">
+
+  </div>
+</div>
+<script type="text/javascript">
+    var start = document.querySelector('.startGame');
+  function game(){
+    var starterButton = document.createElement("input");
+        starterButton.type = "button";
+        starterButton.value = "START";
+        starterButton.setAttribute("onClick","startGame()");
+        start.appendChild(starterButton);
+  }
+  function startGame(){
+      start.innerHTML='';
+      genSquere(set,k);
+  }
+  window.onload=function(){
+      game();
+  }
+</script>
+</body>
+</html>
