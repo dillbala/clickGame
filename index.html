@@ -1,53 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>click game</title>
-<!-- <script src="clickGame.js"></script> -->
+<title>Click Game</title>
 <script type="text/javascript">
-var k=0;
-var set=2;
-var level = 1;
+var set=2; //squere set value starting from 2X2 (row * column)
+var level = 15; //No.of levels
+var cellIncrement = 3; //for each odd levels end squere count will incerese
+var popupLevel = 10; //in which level you want to show your popup
+var url = "http://www.google.com"; //redirect url if timeout or game end
+var levelCounter = 1; //current level
+
+//set of normal and different images
+//normal indicates normal image
+//diff indicates different image
+//image resolution 100 X 100 (width*height)
 var imageSet = [
-  {
-    normal: "http://avatarbox.net/avatars/img33/mighty_mouse_cartoon_avatar_picture_63839.gif",
-    diff: "http://www.millionglitters.com/avatar/cartoons/SpongeBob-Yikes.gif"
-  },
-  {
-    normal:"http://www.millionglitters.com/avatar/cartoons/SpongeBob-Yikes.gif",
-    diff:"http://avatarbox.net/avatars/img33/mighty_mouse_cartoon_avatar_picture_63839.gif"
-  },
-  {
-    normal: "http://avatarbox.net/avatars/img33/mighty_mouse_cartoon_avatar_picture_63839.gif",
-    diff: "http://www.millionglitters.com/avatar/cartoons/SpongeBob-Yikes.gif"
-  },
-  {
-    normal:"http://www.millionglitters.com/avatar/cartoons/SpongeBob-Yikes.gif",
-    diff:"http://avatarbox.net/avatars/img33/mighty_mouse_cartoon_avatar_picture_63839.gif"
-  },
-  {
-    normal: "http://avatarbox.net/avatars/img33/mighty_mouse_cartoon_avatar_picture_63839.gif",
-    diff: "http://www.millionglitters.com/avatar/cartoons/SpongeBob-Yikes.gif"
-  },
-  {
-    normal:"http://www.millionglitters.com/avatar/cartoons/SpongeBob-Yikes.gif",
-    diff:"http://avatarbox.net/avatars/img33/mighty_mouse_cartoon_avatar_picture_63839.gif"
-  },
-  {
-    normal: "http://avatarbox.net/avatars/img33/mighty_mouse_cartoon_avatar_picture_63839.gif",
-    diff: "http://www.millionglitters.com/avatar/cartoons/SpongeBob-Yikes.gif"
-  },
-  {
-    normal:"http://www.millionglitters.com/avatar/cartoons/SpongeBob-Yikes.gif",
-    diff:"http://avatarbox.net/avatars/img33/mighty_mouse_cartoon_avatar_picture_63839.gif"
-  },
-  {
-    normal: "http://avatarbox.net/avatars/img33/mighty_mouse_cartoon_avatar_picture_63839.gif",
-    diff: "http://www.millionglitters.com/avatar/cartoons/SpongeBob-Yikes.gif"
-  },
-  {
-    normal:"http://www.millionglitters.com/avatar/cartoons/SpongeBob-Yikes.gif",
-    diff:"http://avatarbox.net/avatars/img33/mighty_mouse_cartoon_avatar_picture_63839.gif"
-  },
   {
     normal: "http://avatarbox.net/avatars/img33/mighty_mouse_cartoon_avatar_picture_63839.gif",
     diff: "http://www.millionglitters.com/avatar/cartoons/SpongeBob-Yikes.gif"
@@ -70,77 +37,104 @@ var imageSet = [
   }
 ];
 
-var chooser = function(v){
-   return [Math.floor(Math.random()*v), Math.floor(Math.random()*v)];
+var previousIndex = [];
+//Game squere creator
+var chooser = function(set){
+   return [Math.floor(Math.random()*set), Math.floor(Math.random()*set)];
 }
-function genSquere(v,k){ 
-    //timer Count
-    function tick() {
-       var remaining = (count - (now() - initTick)) / 1000;  
-       remaining = remaining >= 0 ? remaining : window.location.href = "http://www.google.com";
-       var secs = remaining.toFixed(2);
-       timerElement.innerHTML = secs + " secs";
-       if (remaining) setTimeout(tick, delay);
+function genSquere(set){ 
+    var cellCounter = 0;
+    var currentIndex = previousIndex.length-1;
+
+    //To prevent same image occurence in next
+    var imageIndexGen = function(){
+      var k=Math.floor(Math.random()*(imageSet.length-1)+1);
+      if(k <= imageSet.length && previousIndex[currentIndex] !== k){
+          var imageIndex = k;
+          previousIndex.push(imageIndex);
+      }else{
+        k=Math.floor(Math.random()*(previousIndex[currentIndex]));
+        imageIndex = k;
+        previousIndex.push(imageIndex);
+      }
+      return imageIndex;
     }
-    initTick = now();
-    setTimeout(tick, delay);
-     //timer Count
-
-    //Game Squere Creator
+      //Timer count for each level
+      function tick() {
+         var remaining = ((seconds*1000) - (now() - initTick)) / 1000;
+         remaining = remaining >= 0 ? remaining : window.location.href = url;
+         var secs = remaining.toFixed(2);
+         timerElement.innerHTML = secs + " secs";
+         if (remaining) setTimeout(tick, delay);
+      }
+      initTick = now();
+      setTimeout(tick, delay);
+      //Timer count for each level
+      var indexOfImage = imageIndexGen();
       var e = document.querySelector('.game-board');
-      var coordinates = chooser(v);
-      document.getElementById('level').innerHTML = level+'/15';
-for(i=0; i<v; i++){
-  var row = document.createElement("div");
-    row.className = "row";
-    for(var x = 0; x < v; x++){ 
-            var cell = document.createElement("div"); 
-                cell.className = "square"; 
-                cell.setAttribute('data-index', x+1);
-            row.appendChild(cell); 
-            var image = document.createElement("img");
-                image.className="img-responsive";
-                if(i === coordinates[0] && x === coordinates[1]) {
-                    image.src=imageSet[k].diff;
-                    image.setAttribute("onClick","next()");
-                } else {
-                    image.src=imageSet[k].normal; 
-                }
-            cell.appendChild(image);
-        } 
-  e.appendChild(row);
-  //Game Squere Creator
-  }
-  }
+      var coordinates = chooser(set);
+      document.getElementById('levelCounter').innerHTML = levelCounter+'/'+level;
+      for(i=0; i<set; i++){
+        var row = document.createElement("div");
+          row.className = "row";
+          for(var x = 0; x < set; x++){ 
+                  var cell = document.createElement("div"); 
+                      cell.className = "squere";
+                      cell.id = cellCounter++;
+                  var image = document.createElement("img");
+                      image.className="img-responsive";
+                      if(i === coordinates[0] && x === coordinates[1]) {
+                          image.src=imageSet[indexOfImage].diff;
+                          image.setAttribute("onClick","next()");
+                        } else {
+                          image.src=imageSet[indexOfImage].normal;
+                          image.setAttribute('data-index', cellCounter-1)
+                          cell.setAttribute("onClick","warning()");
+                      }
+                  row.appendChild(cell);
+                  cell.appendChild(image);
+              } 
+        e.appendChild(row);
+      }
+}
 
-// Get the modal
+//border-color changer if user clicks normal image
+function warning() {
+  var index = window.event.target.getAttribute("data-index");
+  document.getElementById(index).style.border = "3px solid #ff0000";
+  setTimeout(function(){
+    document.getElementById(index).style.border = "3px solid #ddd";
+  },150);
+};
+
+// Get next level
 function next(){
-    url = "http://google.com";
-    level++;
+    levelCounter++;
     document.querySelector('.game-board').innerHTML = "";
     set++;
-    if(level === 10){
+    if(levelCounter === popupLevel){
       popup();
     }
-    if(level%3 === 0 && level !== 16){
-      genSquere(set,++k);
+    if(levelCounter%cellIncrement === 0 && levelCounter <= level){
+      genSquere(set);
     }
-    if(level%3 !== 0 && level !== 16 && level !== 10){
-      genSquere(set--,++k);
+    if(levelCounter%cellIncrement !== 0 && levelCounter <= level && levelCounter !== popupLevel){
+      genSquere(set--);
     }
-    if(level === 16){
-      document.getElementById('level').innerHTML = '';
+    if(levelCounter >= (level+1)){
+      document.getElementById('levelCounter').innerHTML = '';
       document.querySelector('.game-board').innerHTML = "You Did It...!";
       window.location.href = url;
     }
  }
 
+//Get Popup
 function popup(){
   document.getElementById('myModal').style.display = "block";
 }
 </script>
 <style>
-#level{
+#levelCounter{
   margin: 20px;
 }
 body{
@@ -163,13 +157,13 @@ body{
   width:100%;
   display: flex;
 }
-.square{
+.squere{
   width:100%;
   box-sizing:border-box;
-  border:1px solid #000;
+  border:3px solid #ddd;
   display:flex;
 }
-.square img {
+.squere img {
   width: 100%;
   height: 100%;
   object-fit: contain;
@@ -251,10 +245,10 @@ body{
 </head>
 <body>
 <div class="container">
-  <div id="level"></div></br>
+  <div id="levelCounter"></div></br>
   <div id="timer"></div>
   <div class="startGame">
-    <img src="http://a970.phobos.apple.com/us/r1000/078/Purple2/v4/5f/05/d4/5f05d4b5-242f-aede-8c70-881552a55c4e/mzl.gocodlcw.png"/></br>
+    <img src="file:///C:/Users/thoughtminerz/Downloads/child-1837375_1280.png"/></br>
   </div>
   <div class="game-board">
 
@@ -268,7 +262,7 @@ body{
       <h2>Wow Awesome...!</h2>
     </div>
     <div class="modal-body">
-      <p>you are in level 10th</p>
+      <p>You are in 10th level</p>
     </div>
     <div class="modal-footer">
       <button class="continue" onclick="exitpopup()">continue</button>
@@ -276,7 +270,8 @@ body{
   </div>
 
 <script type="text/javascript">
-    var start = document.querySelector('.startGame');
+//Game Starter
+  var start = document.querySelector('.startGame');
   function game(){
     var starterButton = document.createElement("input");
         starterButton.type = "button";
@@ -286,26 +281,26 @@ body{
   }
   function startGame(){
       start.innerHTML='';
-      genSquere(set,k);
+      genSquere(set);
   }
   window.onload=function(){
       game();
   }
+
+  //To close popup
   function exitpopup(){
-    document.getElementById('myModal').style.display = "none";
-    genSquere(set--,++k);
+      document.getElementById('myModal').style.display = "none";
+      genSquere(set);
   }
+
   //timer
   function now() {
     return window.performance ? window.performance.now() : Date.now();
   }
-    
-    var count = 10000;
-    var delay = 20; //20 ms. This will be only indicative. There's no guarantee the browswer will call the function after exactly this time
-    
-    var initTick = 0;
-    var timerElement = document.getElementById("timer");
-  //timer
+  var seconds = 10; //timer in seconds for each level
+  var delay = 20; 
+  var initTick = 0;
+  var timerElement = document.getElementById("timer");
  </script>
 </body>
 </html>
