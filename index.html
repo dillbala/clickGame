@@ -42,7 +42,7 @@ var click = false;
 var chooser = function(set){
    return [Math.floor(Math.random()*set), Math.floor(Math.random()*set)];
 }
-function genSquere(set){ 
+function genSquere(set){
     var cellCounter = 0;
     var currentIndex = previousIndex.length-1;
 
@@ -63,10 +63,10 @@ function genSquere(set){
       function tick() {
         var remaining = ((seconds*1000) - (now() - initTick)) / 1000;
         remaining = remaining >= 0 ? remaining : window.location.href = url;
-        if(click === true){
-          var secs = (remaining-2).toFixed(2);
+        if(click === true && remaining >= 1){
+          var secs = (remaining-1).toFixed(1);
         }else{
-          var secs = remaining.toFixed(2);
+          var secs = remaining.toFixed(1);
         }
          timerElement.innerHTML = secs + " secs";
          if (remaining) setTimeout(tick, delay)
@@ -109,8 +109,8 @@ function genSquere(set){
     document.getElementById(index).style.border = "3px solid #ff0000";
         setTimeout(function(){
           document.getElementById(index).style.border = "3px solid #ddd";
-        },150);
-        click = true;
+       },150);
+      click = true;
   };
 
 
@@ -124,16 +124,18 @@ function next(){
     }
     if(levelCounter%cellIncrement === 0 && levelCounter <= level){
       genSquere(set);
+      click = false;
     }
     if(levelCounter%cellIncrement !== 0 && levelCounter <= level && levelCounter !== popupLevel){
       genSquere(set--);
+      click = false;
     }
     if(levelCounter >= (level+1)){
       document.getElementById('levelCounter').innerHTML = '';
       document.querySelector('.game-board').innerHTML = "You Did It...!";
       window.location.href = url;
     }
- }
+}
 
 //Get Popup
 function popup(){
