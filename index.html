@@ -36,8 +36,8 @@ var imageSet = [
     diff: "http://www.millionglitters.com/avatar/cartoons/SpongeBob-Yikes.gif"
   }
 ];
-
 var previousIndex = [];
+var click = false;
 //Game squere creator
 var chooser = function(set){
    return [Math.floor(Math.random()*set), Math.floor(Math.random()*set)];
@@ -61,11 +61,15 @@ function genSquere(set){
     }
       //Timer count for each level
       function tick() {
-         var remaining = ((seconds*1000) - (now() - initTick)) / 1000;
-         remaining = remaining >= 0 ? remaining : window.location.href = url;
-         var secs = remaining.toFixed(2);
+        var remaining = ((seconds*1000) - (now() - initTick)) / 1000;
+        remaining = remaining >= 0 ? remaining : window.location.href = url;
+        if(click === true){
+          var secs = (remaining-2).toFixed(2);
+        }else{
+          var secs = remaining.toFixed(2);
+        }
          timerElement.innerHTML = secs + " secs";
-         if (remaining) setTimeout(tick, delay);
+         if (remaining) setTimeout(tick, delay)
       }
       initTick = now();
       setTimeout(tick, delay);
@@ -89,6 +93,7 @@ function genSquere(set){
                         } else {
                           image.src=imageSet[indexOfImage].normal;
                           image.setAttribute('data-index', cellCounter-1)
+                          image.className = "norimage"
                           cell.setAttribute("onClick","warning()");
                       }
                   row.appendChild(cell);
@@ -99,13 +104,15 @@ function genSquere(set){
 }
 
 //border-color changer if user clicks normal image
-function warning() {
-  var index = window.event.target.getAttribute("data-index");
-  document.getElementById(index).style.border = "3px solid #ff0000";
-  setTimeout(function(){
-    document.getElementById(index).style.border = "3px solid #ddd";
-  },150);
-};
+  function warning() {
+    var index = window.event.target.getAttribute("data-index");
+    document.getElementById(index).style.border = "3px solid #ff0000";
+        setTimeout(function(){
+          document.getElementById(index).style.border = "3px solid #ddd";
+        },150);
+        click = true;
+  };
+
 
 // Get next level
 function next(){
