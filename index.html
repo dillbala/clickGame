@@ -9,7 +9,7 @@ var cellIncrement = 3; //for each odd levels end squere count will incerese
 var popupLevel = 10; //in which level you want to show your popup
 var url = "http://www.google.com"; //redirect url if timeout or game end
 var levelCounter = 1; //current level
-
+var timeReducerCount = 0; //to reduce time in seconds based on users no.of times of wrong click
 //set of normal and different images
 //normal indicates normal image
 //diff indicates different image
@@ -38,6 +38,7 @@ var imageSet = [
 ];
 var previousIndex = [];
 var click = false;
+var pause = false;
 //Game squere creator
 var chooser = function(set){
    return [Math.floor(Math.random()*set), Math.floor(Math.random()*set)];
@@ -45,7 +46,6 @@ var chooser = function(set){
 function genSquere(set){
     var cellCounter = 0;
     var currentIndex = previousIndex.length-1;
-
     //To prevent same image occurence in next
     var imageIndexGen = function(){
       var k=Math.floor(Math.random()*(imageSet.length-1)+1);
@@ -60,16 +60,21 @@ function genSquere(set){
       return imageIndex;
     }
       //Timer count for each level
+      
       function tick() {
-        var remaining = ((seconds*1000) - (now() - initTick)) / 1000;
+        var remaining =((seconds*1000) - (now() - initTick))/ 1000;
         remaining = remaining >= 0 ? remaining : window.location.href = url;
-        if(click === true && remaining >= 1){
-          var secs = (remaining-1).toFixed(1);
+        if(click && remaining >= timeReducerCount){
+          if(timeReducerCount >= 1){
+            seconds = seconds - timeReducerCount;
+          }
+          var secs = (remaining).toFixed(1);
+          click=false;
         }else{
-          var secs = remaining.toFixed(1);
+          secs = remaining.toFixed(1);
         }
          timerElement.innerHTML = secs + " secs";
-         if (remaining) setTimeout(tick, delay)
+         if (remaining && !pause) setTimeout(tick, delay)
       }
       initTick = now();
       setTimeout(tick, delay);
@@ -94,7 +99,7 @@ function genSquere(set){
                           image.src=imageSet[indexOfImage].normal;
                           image.setAttribute('data-index', cellCounter-1)
                           image.className = "norimage"
-                          cell.setAttribute("onClick","warning()");
+                          cell.setAttribute("onClick","warning(event)");
                       }
                   row.appendChild(cell);
                   cell.appendChild(image);
@@ -102,33 +107,36 @@ function genSquere(set){
         e.appendChild(row);
       }
 }
-
 //border-color changer if user clicks normal image
-  function warning() {
-    var index = window.event.target.getAttribute("data-index");
+  function warning(event) {
+    var index = event.target.getAttribute("data-index");
     document.getElementById(index).style.border = "3px solid #ff0000";
         setTimeout(function(){
           document.getElementById(index).style.border = "3px solid #ddd";
        },150);
+      ++timeReducerCount;
       click = true;
   };
-
-
 // Get next level
 function next(){
     levelCounter++;
     document.querySelector('.game-board').innerHTML = "";
     set++;
     if(levelCounter === popupLevel){
+      pause = true;
       popup();
     }
     if(levelCounter%cellIncrement === 0 && levelCounter <= level){
       genSquere(set);
       click = false;
+      seconds =10;
+      timeReducerCount = 0;
     }
     if(levelCounter%cellIncrement !== 0 && levelCounter <= level && levelCounter !== popupLevel){
       genSquere(set--);
       click = false;
+      seconds =10;
+      timeReducerCount = 0;
     }
     if(levelCounter >= (level+1)){
       document.getElementById('levelCounter').innerHTML = '';
@@ -136,7 +144,6 @@ function next(){
       window.location.href = url;
     }
 }
-
 //Get Popup
 function popup(){
   document.getElementById('myModal').style.display = "block";
@@ -195,7 +202,6 @@ body{
     background-color: rgb(0,0,0); /* Fallback color */
     background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
-
 /* Modal Content */
 .modal-content {
     position: relative;
@@ -210,18 +216,15 @@ body{
     animation-name: animatetop;
     animation-duration: 0.4s
 }
-
 /* Add Animation */
 @-webkit-keyframes animatetop {
     from {top:-300px; opacity:0} 
     to {top:0; opacity:1}
 }
-
 @keyframes animatetop {
     from {top:-300px; opacity:0}
     to {top:0; opacity:1}
 }
-
 /* The Close Button */
 .close {
     color: white;
@@ -229,22 +232,18 @@ body{
     font-size: 28px;
     font-weight: bold;
 }
-
 .close:hover,
 .close:focus {
     color: #000;
     text-decoration: none;
     cursor: pointer;
 }
-
 .modal-header {
     padding: 2px 16px;
     background-color: #5cb85c;
     color: white;
 }
-
 .modal-body {padding: 2px 16px;}
-
 .modal-footer {
     padding: 2px 16px;
     background-color: #5cb85c;
@@ -295,13 +294,15 @@ body{
   window.onload=function(){
       game();
   }
-
   //To close popup
   function exitpopup(){
       document.getElementById('myModal').style.display = "none";
+      pause = false;
+      click = false;
+      timeReducerCount = 0;
       genSquere(set);
+      seconds =10;
   }
-
   //timer
   function now() {
     return window.performance ? window.performance.now() : Date.now();
